@@ -3,14 +3,14 @@ import time
 
 # config
 window_witdh, window_height = 600,600
-initial_pos_x, initial_pos_x = 100, 100
+initial_pos_x, initial_pos_y = 100, 100
 
 pygame.init()
 screen = pygame.display.set_mode((window_witdh, window_height))
 clock = pygame.time.Clock()
 
 vamp = pygame.image.load(r'resources\pix\bat_xs.png').convert_alpha()
-x, y = initial_pos_x/2, initial_pos_x/2
+x, y = initial_pos_x/2, initial_pos_y/2
 velocity = 1
 while True:
     for event in pygame.event.get():
@@ -43,6 +43,15 @@ while True:
     if still_pressing == False:
         velocity=1
     screen.blit(vamp,(x,y))
+
+    if x < 0:
+        x = window_witdh
+    elif x > window_witdh:
+        x = 0
+    if y < 0:
+        y = window_height
+    elif y > window_height:
+        y = 0
 
     pygame.display.update()
     clock.tick(30)
