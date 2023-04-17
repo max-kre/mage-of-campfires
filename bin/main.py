@@ -1,14 +1,15 @@
 import pygame
 from sys import exit
 from pygame import mixer
-from settings import *
-from Enemy import Enemy
+from .settings import *
+from .Enemy import Enemy
+from .Tower import Tower
 
 class Game:
     def __init__(self) -> None:
         #only for __main__ reasons!
         pygame.init()
-        self.screen = pygame.display.set_mode(SCREENSIZE) 
+        # self.screen = pygame.display.set_mode(SCREENSIZE) 
         
         
         self.run_game = True
@@ -16,7 +17,8 @@ class Game:
         self.display_surface = pygame.display.get_surface()
         print((self.display_surface.get_width(),self.display_surface.get_height()))
         self.bg_img = pygame.Surface((self.display_surface.get_width(),self.display_surface.get_height()))
-        self.bg_img.fill('black')
+        self.bg_img.fill('darkgrey')
+        self.ui_font_50px = pygame.font.Font(None, 50)
         #start BG music
         # mixer.init()
         # mixer.music.load('data/Audio/spooky.wav')
@@ -24,12 +26,13 @@ class Game:
         
         self.lives = STARTLIVES
         self.gold = STARTGOLD
-        self.enemies = []
-        self.towers = []
-        self.all_sprite_objects = pygame.sprite.Group()
+        self.wave_counter = 0
+        self.tower_sprites = pygame.sprite.Group()
+        self.animation_sprites = pygame.sprite.Group()
+        self.enemy_sprites = pygame.sprite.Group()
 
     def run(self):
-        self.spawnEnemy()
+        self.spawnDummyTower()
         self.starttime=pygame.time.get_ticks()
         self.isReady = False
         while self.run_game:
@@ -46,36 +49,60 @@ class Game:
             pygame.display.update()
         pass
 
-    def spawnEnemy(self):
-        self.enemies.append(Enemy(group=self.all_sprite_objects, type='boss', changePlayerGoldFunc=self.changeGold, changePlayerHealthFunc=self.changeLife))
-        self.enemies.append(Enemy(group=self.all_sprite_objects, type='minion', changePlayerGoldFunc=self.changeGold, changePlayerHealthFunc=self.changeLife))
-        # Enemy(group=self.all_sprite_objects,type='minion')
-        # self.enemies.append(Enemy(pos=pygame.math.Vector2((0,100)), group=self.all_sprite_objects))
+    def spawnEnemyWave(self):
+        if self.wave_counter % 5:
+            Enemy(group=self.enemy_sprites, type='minion', changePlayerGoldFunc=self.changeGold, changePlayerHealthFunc=self.changeLife)
+        else:
+            Enemy(group=self.enemy_sprites, type='boss', changePlayerGoldFunc=self.changeGold, changePlayerHealthFunc=self.changeLife)
+        # Enemy(group=self.enemy_sprites,type='minion')
+        # self.enemies.append(Enemy(pos=pygame.math.Vector2((0,100)), group=self.enemy_sprites))
+        
+    def spawnDummyTower(self):
+        Tower(self.tower_sprites,pygame.math.Vector2((600,200)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="blast")
+        Tower(self.tower_sprites,pygame.math.Vector2((500,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="sniper")
 
     def changeLife(self,amount):
         self.lives += amount
+        print("Lives",self.lives)
 
     def changeGold(self,amount):
         self.gold += amount
+        print("Gold",self.gold)
 
     def update(self,dt):
-        # for e in self.enemies:
-        #     e.update()
-        if pygame.time.get_ticks() > self.starttime + 200:
+        if pygame.time.get_ticks() > self.starttime + 500:
             self.isReady=True
         if self.isReady:
-            for e in self.enemies:
-                e.changeHealth(-1)
+            self.spawnEnemyWave()
+            self.wave_counter += 1
+            print("RAWR", self.wave_counter)
             self.isReady=False
             self.starttime = pygame.time.get_ticks()
         pass
-        self.all_sprite_objects.update(dt)
+        self.enemy_sprites.update(dt)
+        self.tower_sprites.update(dt)
+        self.animation_sprites.update(dt)
+
+    def drawUI(self):
+        gold_img = self.ui_font_50px.render(f"Gold: {self.gold}", False, "gold")
+        gold_rect = gold_img.get_rect(topright=(SCREENSIZE[0]-25,25))
+        lives_img = self.ui_font_50px.render(f"Lives: {self.lives}", False, "red")
+        lives_rect = lives_img.get_rect(topleft=(25,25))
+        wave_img = self.ui_font_50px.render(f"Sent: {self.wave_counter}", False, "black")
+        wave_rect = wave_img.get_rect(midtop=(SCREENSIZE[0]//2,25))
+        self.display_surface.blit(gold_img, gold_rect)
+        self.display_surface.blit(lives_img, lives_rect)
+        self.display_surface.blit(wave_img, wave_rect)
+        pass
 
     def draw(self):
         # draw bg
-        # self.screen.fill("red")
         self.display_surface.blit(self.bg_img,(0,0))
-        self.all_sprite_objects.draw(self.display_surface)
+        pygame.draw.aalines(self.display_surface,"white",False,ENEMYPATH,1)
+        self.enemy_sprites.draw(self.display_surface)
+        self.tower_sprites.draw(self.display_surface)
+        self.animation_sprites.draw(self.display_surface)
+        self.drawUI()
 
 if __name__ == "__main__":
     game = Game()

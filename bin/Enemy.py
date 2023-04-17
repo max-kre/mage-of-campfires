@@ -1,6 +1,6 @@
 import pygame
 import math
-from settings import *
+from .settings import *
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, group, type, changePlayerGoldFunc, changePlayerHealthFunc, pos:pygame.math.Vector2=None) -> None:
@@ -9,7 +9,6 @@ class Enemy(pygame.sprite.Sprite):
         self.type = type
         self.changePlayerGoldFunc = changePlayerGoldFunc
         self.changePlayerHealthFunc = changePlayerHealthFunc
-        # print(self.path[0])
         self.path = ENEMYPATH
         self.total_path_length = Enemy.getPathLength(self.path)
         self.pos = pos if pos is not None else pygame.math.Vector2(self.path[0])
@@ -30,6 +29,9 @@ class Enemy(pygame.sprite.Sprite):
         self.speed = self.basestats["speed"]
         self.penalty = self.basestats["penalty"]
 
+        # flags n stuff
+        self.got_hit = False
+
     @staticmethod
     def getPathLength(path):
         path_length = 0
@@ -42,11 +44,14 @@ class Enemy(pygame.sprite.Sprite):
     
     # def draw(self):
     #     pass
+    
     def changeHealth(self,amount):
         self.health += amount
-        self.gotHit = True
+        self.got_hit = True if amount < 0 else False
         if self.health <= 0:
             self.enemyGotKilled()
+        elif self.got_hit:
+            self.got_hit_time = pygame.time.get_ticks()
 
     # def blink(self):
     #     blink_rate = 60
@@ -56,7 +61,12 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self,dt):
         _perc = self.health/self.basestats["health"]
-        self.image.fill((255*_perc,255*(1-_perc),0))
+        if self.got_hit:
+            self.image.fill(COL_GOTHIT)
+            if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
+                self.got_hit = False
+        else:
+            self.image.fill((255*_perc,255*(1-_perc),0))
         self.move(dt)
         
         # print(self.pos.x, self.pos.y)
