@@ -23,11 +23,17 @@ class Tower(pygame.sprite.Sprite):
         self.range = TOWER_BASEVALUES[self.type]["range"]
         self.height, self.width = self.range*2,self.range*2
         
+        self.foundation = pygame.image.load('data/graphics/towers/foundation.png')
+        self.pos_f = (pos[0]-10, pos[1]-10)
+        self.rect_f = self.foundation.get_rect(center=self.pos_f)
+
         self.image = pygame.Surface([self.width,self.height],pygame.SRCALPHA)
+        self.image_canon = pygame.image.load('data/graphics/towers/cannon_lvl1.png').convert_alpha()
+        self.image.blit(self.image_canon,(self.range-self.image_canon.get_width()//2,self.range-self.image_canon.get_height()//2))
         # self.image.fill("white")
         # self.image.set_colorkey("white")
         self.rect = self.image.get_rect(center=self.pos)
-        pygame.draw.circle(self.image,self.color,(self.range,self.range),25)
+        #pygame.draw.circle(self.image,self.color,(self.range,self.range),25)
         # pygame.gfxdraw.filled_circle(self.image,32,32,12,(0,255,255))
         # self.display_surface = pygame.display.get_surface()
 
@@ -40,7 +46,8 @@ class Tower(pygame.sprite.Sprite):
         self.attack_delay = TOWER_BASEVALUES[self.type]["attack_delay"] #ms
         # self.range = 200
         #draw range
-        pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
+        # pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
+        pygame.draw.circle(self.image,self.color,(self.range,self.range),self.range,width=1)
         self.damage = TOWER_BASEVALUES[self.type]["damage"]
         self.splash_radius = 0 if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False

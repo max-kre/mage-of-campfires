@@ -21,9 +21,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.display_surface = pygame.display.get_surface()
         print((self.display_surface.get_width(),self.display_surface.get_height()))
-        self.bg_img = pygame.Surface((self.display_surface.get_width(),self.display_surface.get_height()))
-        self.bg_img.fill('darkgrey')
-        self.ui_font_50px = pygame.font.Font(None, 50)
+        self.bg_img = pygame.image.load('data/graphics/bg.png')
+        self.ui_font_40px = pygame.font.Font(None, 40)
         #start BG music
         # mixer.init()
         # mixer.music.load('data/Audio/spooky.wav')
@@ -63,7 +62,7 @@ class Game:
         # self.enemies.append(Enemy(pos=pygame.math.Vector2((0,100)), group=self.enemy_sprites))
         
     def spawnDummyTower(self):
-        Tower(self.tower_sprites,pygame.math.Vector2((600,200)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="blast")
+        Tower(self.tower_sprites,pygame.math.Vector2((430,387)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="blast")
         # Tower(self.tower_sprites,pygame.math.Vector2((500,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="sniper")
 
     def changeLife(self,amount):
@@ -89,12 +88,12 @@ class Game:
         self.animation_sprites.update(dt)
 
     def drawUI(self):
-        gold_img = self.ui_font_50px.render(f"Gold: {self.gold}", False, "gold")
-        gold_rect = gold_img.get_rect(topright=(SCREENSIZE[0]-25,25))
-        lives_img = self.ui_font_50px.render(f"Lives: {self.lives}", False, "red")
-        lives_rect = lives_img.get_rect(topleft=(25,25))
-        wave_img = self.ui_font_50px.render(f"Sent: {self.wave_counter}", False, "black")
-        wave_rect = wave_img.get_rect(midtop=(SCREENSIZE[0]//2,25))
+        gold_img = self.ui_font_40px.render(f"Gold: {self.gold}", False, "black")
+        gold_rect = gold_img.get_rect(topright=(SCREENSIZE[0]-25,8))
+        lives_img = self.ui_font_40px.render(f"Lives: {self.lives}", False, "red")
+        lives_rect = lives_img.get_rect(topleft=(25,8))
+        wave_img = self.ui_font_40px.render(f"Sent: {self.wave_counter}", False, "black")
+        wave_rect = wave_img.get_rect(midtop=(SCREENSIZE[0]//2,15))
         self.display_surface.blit(gold_img, gold_rect)
         self.display_surface.blit(lives_img, lives_rect)
         self.display_surface.blit(wave_img, wave_rect)

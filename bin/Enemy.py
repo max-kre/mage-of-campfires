@@ -3,6 +3,11 @@ import math
 from .settings import *
 # from .utility_funcs import *
 
+IMAGES = {
+    "boss": pygame.image.load(f'data/graphics/enemies/boss.png'),
+    "minion": pygame.image.load(f'data/graphics/enemies/minion.png')
+}
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, group, type, changePlayerGoldFunc, changePlayerHealthFunc, pos:pygame.math.Vector2=None,sounds=None) -> None:
         super().__init__(group)
@@ -17,8 +22,10 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = pos if pos is not None else pygame.math.Vector2(self.path[0])
         
         self.basestats = ENEMIES_BASEVALUES[type]
-        self.image = pygame.Surface((self.basestats["size"],self.basestats["size"]))
-        self.rect = self.image.get_rect(center=self.pos)
+        print (self.type)
+        # self.image = pygame.image.load(f'data/graphics/enemies/{self.type}.png')
+        self.image = IMAGES[self.type]
+        self.rect = self.image.get_rect(midbottom=self.pos)
 
         #movement
         self.target_path_point = 1
@@ -65,13 +72,13 @@ class Enemy(pygame.sprite.Sprite):
     #     self.image.set_alpha(alpha)
 
     def update(self,dt):
-        _perc = self.health/self.basestats["health"]
-        if self.got_hit:
-            self.image.fill(COL_GOTHIT)
-            if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
-                self.got_hit = False
-        else:
-            self.image.fill((255*_perc,255*(1-_perc),0))
+        #_perc = self.health/self.basestats["health"]
+        #if self.got_hit:
+        #    self.image.fill(COL_GOTHIT)
+        #    if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
+        #        self.got_hit = False
+        #else:
+        #    self.image.fill((255*_perc,255*(1-_perc),0))
         self.move(dt)
         
         # print(self.pos.x, self.pos.y)
@@ -96,7 +103,7 @@ class Enemy(pygame.sprite.Sprite):
             self.length_of_current_segment = Enemy.getPathLength([self.path[self.target_path_point-1],self.path[self.target_path_point]])
         
         #move rect to current pos
-        self.rect.center = self.pos
+        self.rect.midbottom = self.pos
 
     def enemyGotThrough(self):
         print('Got through!')
