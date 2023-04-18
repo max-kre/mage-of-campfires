@@ -1,10 +1,13 @@
 import pygame
 import math
 from .settings import *
+# from .utility_funcs import *
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, group, type, changePlayerGoldFunc, changePlayerHealthFunc, pos:pygame.math.Vector2=None) -> None:
+    def __init__(self, group, type, changePlayerGoldFunc, changePlayerHealthFunc, pos:pygame.math.Vector2=None,sounds=None) -> None:
         super().__init__(group)
+
+        self.sounds = sounds
 
         self.type = type
         self.changePlayerGoldFunc = changePlayerGoldFunc
@@ -48,6 +51,8 @@ class Enemy(pygame.sprite.Sprite):
     def changeHealth(self,amount):
         self.health += amount
         self.got_hit = True if amount < 0 else False
+        if self.sounds:
+            self.sounds["hit_sound"].play()
         if self.health <= 0:
             self.enemyGotKilled()
         elif self.got_hit:
@@ -100,6 +105,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def enemyGotKilled(self):
         print("BLARGH")
+        if self.sounds:
+            self.sounds["death_sound"].play()
         self.changePlayerGoldFunc(self.worth)
         self.kill()
 

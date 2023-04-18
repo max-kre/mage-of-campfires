@@ -15,17 +15,17 @@ STARTLIVES = 10
 ENEMYPATH = [(-50,100),(1000,100),(1100,200),(1000,300),(-50,300)]
 ENEMIES_BASEVALUES = {
     "boss": {
-        "health" : 100,
+        "health" : 150,
         "worth" : 10,
         "penalty": 5,
-        "speed" : 100,
+        "speed" : 150,
         "size" : 48
     },
     "minion": {
-        "health" : 10,
+        "health" : 45,
         "worth" : 2,
         "penalty": 1,
-        "speed" : 400,
+        "speed" : 300,
         "size" : 32
     }
 }
@@ -35,10 +35,10 @@ TOWER_BASEVALUES = {
     "blast": {
         "color" : (25,25,25),
         "range" : 300, #radius in px
-        "damage" : 5,
+        "damage" : 20,
         # "has_splash": True,
         "splash_radius" : 250, #px
-        "attack_delay" : 500, #ms
+        "attack_delay" : 1200, #ms
         "target_strategy": "first"
     },
     "sniper": {
