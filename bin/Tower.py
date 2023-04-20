@@ -4,6 +4,7 @@ import math
 from .settings import *
 from .Enemy import Enemy
 from .ringShot import RingShotSprite
+from .utils.utility_funcs import *
 
 class Tower(pygame.sprite.Sprite):
     def __init__(self, 
@@ -22,11 +23,17 @@ class Tower(pygame.sprite.Sprite):
         self.range = TOWER_BASEVALUES[self.type]["range"]
         self.height, self.width = self.range*2,self.range*2
         
+        self.foundation = pygame.image.load('data/graphics/towers/foundation.png')
+        self.pos_f = (pos[0]-10, pos[1]-10)
+        self.rect_f = self.foundation.get_rect(center=self.pos_f)
+
         self.image = pygame.Surface([self.width,self.height],pygame.SRCALPHA)
+        self.image_canon = pygame.image.load('data/graphics/towers/cannon_lvl1.png').convert_alpha()
+        self.image.blit(self.image_canon,(self.range-self.image_canon.get_width()//2,self.range-self.image_canon.get_height()//2))
         # self.image.fill("white")
         # self.image.set_colorkey("white")
         self.rect = self.image.get_rect(center=self.pos)
-        pygame.draw.circle(self.image,self.color,(self.range,self.range),25)
+        #pygame.draw.circle(self.image,self.color,(self.range,self.range),25)
         # pygame.gfxdraw.filled_circle(self.image,32,32,12,(0,255,255))
         # self.display_surface = pygame.display.get_surface()
 
@@ -39,10 +46,24 @@ class Tower(pygame.sprite.Sprite):
         self.attack_delay = TOWER_BASEVALUES[self.type]["attack_delay"] #ms
         # self.range = 200
         #draw range
-        pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
+        # pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
+        pygame.draw.circle(self.image,self.color,(self.range,self.range),self.range,width=1)
         self.damage = TOWER_BASEVALUES[self.type]["damage"]
         self.splash_radius = 0 if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False
+        self.effects = {
+            "spawn_secondary":{
+                "damage": self.damage//2,
+                "radius": self.splash_radius//2,
+                "effect": {
+                    "spawn_secondary":{
+                        "damage": self.damage//3,
+                        "radius": self.splash_radius//3,
+                        "effect": None
+                    }
+                }
+            }
+        }
 
         self.target_strategy = TOWER_BASEVALUES[self.type]["target_strategy"]
 
@@ -53,17 +74,10 @@ class Tower(pygame.sprite.Sprite):
             return
         # for enemy in sorted(self.enemy_group.sprites(),key=lambda x:x.percent_of_path_traveled,reverse=True):
         for enemy in self.enemy_group.sprites():
-            if Tower.inRange(self.pos,enemy,self.range):
+            if enemyInRange(self.pos,enemy.pos,self.range):
                 self.enemies_in_range.append(enemy)
         # print(self.enemies_in_range)
 
-    @staticmethod
-    def inRange(pos:pygame.math.Vector2,enemy:Enemy,radius:float):
-        if math.sqrt((pos.x - enemy.pos.x)**2 + (pos.y - enemy.pos.y)**2) < radius:
-            return True
-        else:
-            return False
-    
     def shootAtEnemy(self):
         if not self.can_shoot:
             if self.time_of_last_shot + self.attack_delay < pygame.time.get_ticks():
@@ -80,20 +94,27 @@ class Tower(pygame.sprite.Sprite):
             enemy_to_shoot_at = sorted(self.enemies_in_range,key=lambda x:x.percent_of_path_traveled,reverse=True)[0]
         elif self.target_strategy == "strongest":
             enemy_to_shoot_at = sorted(self.enemies_in_range,key=lambda x:x.health,reverse=True)[0]
+        # self.dealDamage(enemy_to_shoot_at)
+        self.spawnDamageEffect(enemy_to_shoot_at)
+
+    def spawnDamageEffect(self, enemy_to_shoot_at):
         if self.has_splash:
-            for enemy in self.enemy_group.sprites():
-                if Tower.inRange(enemy_to_shoot_at.pos,enemy,self.splash_radius):
-                    enemy.changeHealth(-self.damage)
+            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
         else:
-            enemy_to_shoot_at.changeHealth(-self.damage)
-        if self.has_splash:
-            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,radius=self.splash_radius,color=self.color)
-        else:
-            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,color=self.color)
+            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=None,color=self.color)
         print("Pow!")
 
         self.can_shoot = False
         self.time_of_last_shot = pygame.time.get_ticks()
+
+    def dealDamage(self,enemy_to_shoot_at):
+        if self.has_splash:
+            for enemy in self.enemy_group.sprites():
+                if enemyInRange(enemy_to_shoot_at.pos,enemy.pos,self.splash_radius):
+                    enemy.changeHealth(-self.damage)
+        else:
+            enemy_to_shoot_at.changeHealth(-self.damage)
+        pass
 
     # def draw(self):
     #     pygame.draw.circle(self.image,"blue",self.pos,25)
