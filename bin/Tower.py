@@ -35,9 +35,10 @@ class Tower(pygame.sprite.Sprite):
         self.base_image = pygame.Surface([self.width, self.height],pygame.SRCALPHA)
         # self.image_canon = pygame.image.load('data/graphics/towers/cannon_lvl1.png').convert_alpha()
         self.base_image.blit(self.foundation, (self.range-self.foundation.get_width()//2, self.range-self.foundation.get_height()//2))
+        pygame.draw.circle(self.base_image,self.color,(self.range, self.range),self.range,width=1)
         # self.image.fill("white")
         # self.image.set_colorkey("white")
-        self.image=self.base_image
+        self.image=self.base_image.copy()
         self.rect = self.image.get_rect(center=self.pos)
         #pygame.draw.circle(self.image,self.color,(self.range,self.range),25)
         # pygame.gfxdraw.filled_circle(self.image,32,32,12,(0,255,255))
@@ -53,7 +54,6 @@ class Tower(pygame.sprite.Sprite):
         # self.range = 200
         #draw range
         # pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
-        pygame.draw.circle(self.image,self.color,(self.range, self.range),self.range,width=1)
         self.damage = TOWER_BASEVALUES[self.type]["damage"]
         self.splash_radius = 0 if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False
@@ -128,7 +128,8 @@ class Tower(pygame.sprite.Sprite):
         delta_y = enemy_pos.y - self.pos.y
         angle_to_enemy = -90+math.degrees(math.atan2(-delta_y,delta_x))
         rot_image = pygame.transform.rotate(IMAGES[self.type],angle_to_enemy)
-        self.image = self.base_image.blit(
+        self.image = self.base_image.copy()
+        self.image.blit(
             rot_image,
             (self.range - rot_image.get_width()//2, self.range - rot_image.get_height()//2)
         )
