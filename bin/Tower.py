@@ -6,13 +6,18 @@ from .Enemy import Enemy
 from .ringShot import RingShotSprite
 from .utils.utility_funcs import *
 
+IMAGES = {
+    "blast": pygame.image.load('data/graphics/towers/cannon_lvl1.png'),
+    "sniper": pygame.image.load('data/graphics/towers/cannon_lvl1.png')
+}
+FOUNDATION_IMG = pygame.image.load('data/graphics/towers/foundation.png')
 class Tower(pygame.sprite.Sprite):
     def __init__(self, 
         group, 
         pos:pygame.math.Vector2, 
         enemy_group:pygame.sprite.Group, 
         animation_group:pygame.sprite.Group,
-        type:str
+        type:str, 
     ) -> None:
         super().__init__(group)
 
@@ -21,17 +26,18 @@ class Tower(pygame.sprite.Sprite):
         self.color = TOWER_BASEVALUES[self.type]["color"]
         
         self.range = TOWER_BASEVALUES[self.type]["range"]
-        self.height, self.width = self.range*2,self.range*2
+        self.height, self.width = self.range*2, self.range*2
         
-        self.foundation = pygame.image.load('data/graphics/towers/foundation.png')
-        self.pos_f = (pos[0]-10, pos[1]-10)
-        self.rect_f = self.foundation.get_rect(center=self.pos_f)
+        self.foundation = FOUNDATION_IMG
+        # self.pos_f = (pos[0]-10, pos[1]-10)
+        # self.rect_f = self.foundation.get_rect(center=self.pos_f)
 
-        self.image = pygame.Surface([self.width,self.height],pygame.SRCALPHA)
-        self.image_canon = pygame.image.load('data/graphics/towers/cannon_lvl1.png').convert_alpha()
-        self.image.blit(self.image_canon,(self.range-self.image_canon.get_width()//2,self.range-self.image_canon.get_height()//2))
+        self.base_image = pygame.Surface([self.width, self.height],pygame.SRCALPHA)
+        # self.image_canon = pygame.image.load('data/graphics/towers/cannon_lvl1.png').convert_alpha()
+        self.base_image.blit(self.foundation, (self.range-self.foundation.get_width()//2, self.range-self.foundation.get_height()//2))
         # self.image.fill("white")
         # self.image.set_colorkey("white")
+        self.image=self.base_image
         self.rect = self.image.get_rect(center=self.pos)
         #pygame.draw.circle(self.image,self.color,(self.range,self.range),25)
         # pygame.gfxdraw.filled_circle(self.image,32,32,12,(0,255,255))
@@ -47,7 +53,7 @@ class Tower(pygame.sprite.Sprite):
         # self.range = 200
         #draw range
         # pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
-        pygame.draw.circle(self.image,self.color,(self.range,self.range),self.range,width=1)
+        pygame.draw.circle(self.image,self.color,(self.range, self.range),self.range,width=1)
         self.damage = TOWER_BASEVALUES[self.type]["damage"]
         self.splash_radius = 0 if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False
@@ -96,6 +102,7 @@ class Tower(pygame.sprite.Sprite):
             enemy_to_shoot_at = sorted(self.enemies_in_range,key=lambda x:x.health,reverse=True)[0]
         # self.dealDamage(enemy_to_shoot_at)
         self.spawnDamageEffect(enemy_to_shoot_at)
+        self.rotateTowerImage(enemy_to_shoot_at.pos)
 
     def spawnDamageEffect(self, enemy_to_shoot_at):
         if self.has_splash:
@@ -114,6 +121,17 @@ class Tower(pygame.sprite.Sprite):
                     enemy.changeHealth(-self.damage)
         else:
             enemy_to_shoot_at.changeHealth(-self.damage)
+        pass
+
+    def rotateTowerImage(self, enemy_pos:pygame.math.Vector2):
+        delta_x = enemy_pos.x - self.pos.x
+        delta_y = enemy_pos.y - self.pos.y
+        angle_to_enemy = -90+math.degrees(math.atan2(-delta_y,delta_x))
+        rot_image = pygame.transform.rotate(IMAGES[self.type],angle_to_enemy)
+        self.image = self.base_image.blit(
+            rot_image,
+            (self.range - rot_image.get_width()//2, self.range - rot_image.get_height()//2)
+        )
         pass
 
     # def draw(self):
