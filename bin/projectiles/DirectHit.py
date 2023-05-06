@@ -1,9 +1,9 @@
 import pygame
 # import pygame.gfxdraw
-from .utils.utility_funcs import *
+from ..utils.utility_funcs import *
 
 
-class RingShotSprite(pygame.sprite.Sprite):
+class DirectHit(pygame.sprite.Sprite):
     def __init__(self, groups, pos, enemies:pygame.sprite.Group, damage, effect_status:dict=None, radius=None, color=None) -> None:
         super().__init__(groups)
         self.sprite_groups = groups
@@ -48,5 +48,6 @@ class RingShotSprite(pygame.sprite.Sprite):
             self.spawnSecondary(self.sprite_groups,enemy.pos,self.enemies,self.status["spawn_secondary"]["damage"],self.status["spawn_secondary"]["effect"],self.status["spawn_secondary"]["radius"],"blue")#self.color)
     
     def spawnSecondary(self,groups,pos:pygame.math.Vector2,enemies,effect_damage,effect_status,radius,color):
-        RingShotSprite(groups,pos,enemies,effect_damage,effect_status,radius,color)
-        # pass
+        # Explosion(groups,pos,enemies,effect_damage,effect_status,radius,color)
+        pass
+

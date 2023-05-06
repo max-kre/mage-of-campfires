@@ -3,7 +3,7 @@ import pygame.gfxdraw
 import math
 from .settings import *
 from .Enemy import Enemy
-from .ringShot import RingShotSprite
+from .projectiles import *
 from .utils.utility_funcs import *
 
 IMAGES = {
@@ -106,9 +106,9 @@ class Tower(pygame.sprite.Sprite):
 
     def spawnDamageEffect(self, enemy_to_shoot_at):
         if self.has_splash:
-            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
+            Explosion(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
         else:
-            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=None,color=self.color)
+            DirectHit(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=None,color=self.color)
         print("Pow!")
 
         self.can_shoot = False
