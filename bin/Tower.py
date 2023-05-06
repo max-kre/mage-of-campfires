@@ -8,7 +8,8 @@ from .utils.utility_funcs import *
 
 IMAGES = {
     "blast": pygame.image.load('data/graphics/towers/mango1.png'),
-    "sniper": pygame.image.load('data/graphics/towers/cannon1.png')
+    "sniper": pygame.image.load('data/graphics/towers/cannon1.png'),
+    "puddler": pygame.image.load('data/graphics/towers/cannon1.png')
 }
 FOUNDATION_IMG = pygame.image.load('data/graphics/towers/foundation.png')
 class Tower(pygame.sprite.Sprite):
@@ -55,21 +56,27 @@ class Tower(pygame.sprite.Sprite):
         #draw range
         # pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
         self.damage = TOWER_BASEVALUES[self.type]["damage"]
-        self.splash_radius = 0 if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
+        self.splash_radius = 0 #if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False
-        self.effects = {
-            "spawn_secondary":{
-                "damage": self.damage//2,
-                "radius": self.splash_radius//2,
-                "effect": {
-                    "spawn_secondary":{
-                        "damage": self.damage//3,
-                        "radius": self.splash_radius//3,
-                        "effect": None
-                    }
-                }
-            }
-        }
+        self.effects = TOWER_BASEVALUES[self.type]["effects"]
+        # {
+        #     "spawn_explosion":{
+        #         "damage": self.damage//2,
+        #         "radius": self.splash_radius//2,
+        #         "effect": {
+        #             "spawn_explosion":{
+        #                 "damage": self.damage//3,
+        #                 "radius": self.splash_radius//3,
+        #                 "effect": None
+        #             }
+        #         }
+        #     },
+        #     "create_puddle": {
+        #         "damage": 50,
+        #         "radius": 50,
+        #         "effect": None
+        #     }
+        # }
 
         self.target_strategy = TOWER_BASEVALUES[self.type]["target_strategy"]
 
@@ -108,8 +115,8 @@ class Tower(pygame.sprite.Sprite):
         if self.has_splash:
             Explosion(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
         else:
-            # DirectHit(self.animation_group,self.pos,enemy_to_shoot_at,damage=self.damage,effect_status=None,color=self.color)
-            LingeringEffect(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage)
+            DirectHit(self.animation_group,self.pos,self.enemy_group,enemy_to_shoot_at,damage=self.damage,effect_status=self.effects,color=self.color)
+            # LingeringEffect(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage)
         print("Pow!")
 
         self.can_shoot = False

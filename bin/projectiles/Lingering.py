@@ -45,8 +45,11 @@ class LingeringEffect(pygame.sprite.Sprite):
 
 
     def applyEffects(self,enemy):
-        if "spawn_secondary" in self.status.keys():
-            self.spawnSecondary(self.sprite_groups,enemy.pos,self.enemies,self.status["spawn_secondary"]["damage"],self.status["spawn_secondary"]["effect"],self.status["spawn_secondary"]["radius"],"blue")#self.color)
+        if "spawn_explosion" in self.status.keys():
+            self.spawnSecondary(self.sprite_groups,enemy.pos,self.enemies,self.status["spawn_explosion"]["damage"],self.status["spawn_explosion"]["effect"],self.status["spawn_explosion"]["radius"],"blue")#self.color)
+        if "slow" in self.status.keys():
+            enemy.handleEffects("slow",start=True,info_dict=self.status["slow"])
+        
     
     def spawnSecondary(self,groups,pos:pygame.math.Vector2,enemies,effect_damage,effect_status,radius,color):
         # RingShotSprite(groups,pos,enemies,effect_damage,effect_status,radius,color)

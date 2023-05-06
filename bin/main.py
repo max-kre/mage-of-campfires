@@ -62,8 +62,9 @@ class Game:
         # self.enemies.append(Enemy(pos=pygame.math.Vector2((0,100)), group=self.enemy_sprites))
         
     def spawnDummyTower(self):
-        # Tower(self.tower_sprites,pygame.math.Vector2((430,387)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="blast")
+        Tower(self.tower_sprites,pygame.math.Vector2((430,387)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="blast")
         Tower(self.tower_sprites,pygame.math.Vector2((500,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="sniper")
+        Tower(self.tower_sprites,pygame.math.Vector2((700,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="puddler")
 
     def changeLife(self,amount):
         self.lives += amount
@@ -83,9 +84,9 @@ class Game:
             self.isReady=False
             self.starttime = pygame.time.get_ticks()
         pass
-        self.animation_sprites.update(dt)
         self.enemy_sprites.update(dt)
         self.tower_sprites.update(dt)
+        self.animation_sprites.update(dt)
 
     def drawUI(self):
         gold_img = self.ui_font_40px.render(f"Gold: {self.gold}", False, "black")
@@ -104,8 +105,8 @@ class Game:
         self.display_surface.blit(self.bg_img,(0,0))
         pygame.draw.aalines(self.display_surface,"white",False,ENEMYPATH,1)
         self.animation_sprites.draw(self.display_surface)
-        self.enemy_sprites.draw(self.display_surface)
         self.tower_sprites.draw(self.display_surface)
+        self.enemy_sprites.draw(self.display_surface)
         self.drawUI()
 
 if __name__ == "__main__":

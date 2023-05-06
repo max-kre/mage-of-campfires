@@ -31,7 +31,7 @@ class Explosion(pygame.sprite.Sprite):
         self.dealDamageToEnemies(r)
 
         # pygame.gfxdraw.circle(self.image,self.max_radius,self.max_radius,r,self.color)
-        pygame.draw.circle(self.image,self.color,(self.max_radius,self.max_radius),r,1)
+        pygame.draw.circle(self.image,self.color,(self.max_radius,self.max_radius),r,10)
         # pygame.gfxdraw.filled_circle(self.image,self.max_radius,self.max_radius,r,(123,20,20))
         # self.image.set_alpha(125)
 
@@ -44,10 +44,7 @@ class Explosion(pygame.sprite.Sprite):
                 self.already_damaged.append(enemy)
 
     def applyEffects(self,enemy):
-        if "spawn_secondary" in self.status.keys():
-            self.spawnSecondary(self.sprite_groups,enemy.pos,self.enemies,self.status["spawn_secondary"]["damage"],self.status["spawn_secondary"]["effect"],self.status["spawn_secondary"]["radius"],"blue")#self.color)
+        if "spawn_explosion" in self.status.keys():
+            Explosion(self.sprite_groups,enemy.pos,self.enemies,self.status["spawn_secondary"]["damage"],self.status["spawn_secondary"]["effect"],self.status["spawn_secondary"]["radius"],self.color)
     
-    def spawnSecondary(self,groups,pos:pygame.math.Vector2,enemies,effect_damage,effect_status,radius,color):
-        Explosion(groups,pos,enemies,effect_damage,effect_status,radius,color)
-        # pass
 

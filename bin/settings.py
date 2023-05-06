@@ -4,7 +4,7 @@ SCREENSIZE = (1200,800)
 
 
 #damage to enemies
-CD_GOTHIT = 70 # time in ms for enemy to blink after getting hit
+CD_GOTHIT = 30 # time in ms for enemy to blink after getting hit
 COL_GOTHIT = (150,150,150)
 
 #gameplay
@@ -15,14 +15,14 @@ STARTLIVES = 10
 ENEMYPATH = [(0,137),(1020,137),(1072,164),(1072,248),(1020,300),(400,305),(343,351),(343,490),(446,546),(1054,551),(1121,592),(1121,695),(1060,735),(-20,745)]
 ENEMIES_BASEVALUES = {
     "boss": {
-        "health" : 200,
+        "health" : 500,
         "worth" : 10,
         "penalty": 5,
         "speed" : 150,
         "size" : 48
     },
     "minion": {
-        "health" : 50,
+        "health" : 100,
         "worth" : 2,
         "penalty": 1,
         "speed" : 300,
@@ -33,20 +33,48 @@ ENEMIES_BASEVALUES = {
 
 TOWER_BASEVALUES = {
     "blast": {
-        "color" : (25,25,25),
+        "color" : (250,25,25),
         "range" : 300, #radius in px
-        "damage" : 20,
+        "damage" : 0,
         # "has_splash": True,
-        "splash_radius" : 250, #px
+        #"splash_radius" : 250, #px
         "attack_delay" : 1200, #ms
-        "target_strategy": "first"
+        "target_strategy": "first",
+        "effects": {
+            "spawn_explosion":{
+                "damage": 20,
+                "radius": 250,
+                "effect": None
+            }
+        }
     },
     "sniper": {
-        "color": (25,250,250),
+        "color": (50,50,50),
         "range" : 700,
         "damage" : 50,
         # "has_splash": False,
-        "attack_delay" : 500,
-        "target_strategy": "first"
+        "attack_delay" : 1000,
+        "target_strategy": "strongest",
+        "effects": None
+    },
+    "puddler": {
+        "color": (25,250,50),
+        "range" : 700,
+        "damage" : 0,
+        # "has_splash": False,
+        "attack_delay" : 1000,
+        "target_strategy": "strongest",
+        "effects":{
+            "create_puddle": {
+                "damage": 50,
+                "radius": 50,
+                "effect": {
+                    "slow":{
+                        "duration_sec": 0.5,
+                        "slow_percent": 50
+                    }
+                }
+            }
+        }
     }
 }

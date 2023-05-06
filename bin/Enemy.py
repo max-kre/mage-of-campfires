@@ -1,7 +1,7 @@
 import pygame
 import math
 from .settings import *
-# from .utility_funcs import *
+from .utils.utility_funcs import *
 
 IMAGES = {
     "boss": pygame.image.load(f'data/graphics/enemies/boss.png'),
@@ -24,7 +24,7 @@ class Enemy(pygame.sprite.Sprite):
         self.basestats = ENEMIES_BASEVALUES[type]
         print (self.type)
         # self.image = pygame.image.load(f'data/graphics/enemies/{self.type}.png')
-        self.image = IMAGES[self.type]
+        self.image = IMAGES[self.type].copy()
         self.rect = self.image.get_rect(midbottom=self.pos)
 
         #movement
@@ -42,6 +42,11 @@ class Enemy(pygame.sprite.Sprite):
         # flags n stuff
         self.got_hit = False
         self.is_alive = True
+
+        #timers
+        self.effect_timers = {
+            "slow": effect_timer()
+        }
 
     @staticmethod
     def getPathLength(path):
@@ -76,13 +81,15 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self,dt):
         #_perc = self.health/self.basestats["health"]
-        #if self.got_hit:
-        #    self.image.fill(COL_GOTHIT)
-        #    if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
-        #        self.got_hit = False
+        if self.got_hit:
+           self.image.set_alpha(50)
+           if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
+               self.got_hit = False
+               self.image.set_alpha(255)
         #else:
         #    self.image.fill((255*_perc,255*(1-_perc),0))
         self.move(dt)
+        self.checkTimers()
         
         # print(self.pos.x, self.pos.y)
 
@@ -107,6 +114,24 @@ class Enemy(pygame.sprite.Sprite):
         
         #move rect to current pos
         self.rect.midbottom = self.pos
+
+    def checkTimers(self):
+        gameticks_now = pygame.time.get_ticks()
+        for effect,timer in zip(self.effect_timers.keys(),self.effect_timers.values()):
+            if timer.is_active:
+                timer.update(gameticks_now)
+                if timer.has_just_finished:
+                    self.handleEffects(effect,start=False)
+                    timer.reset()
+
+    def handleEffects(self,effect_type:str,start=True,info_dict:dict=None):
+        if effect_type == "slow":
+            if start:
+                self.effect_timers["slow"].start_timer(pygame.time.get_ticks(),info_dict["duration_sec"])
+                self.speed = self.basestats["speed"] * info_dict["slow_percent"]/100
+            else:
+                self.speed = self.basestats["speed"]
+
 
     def enemyGotThrough(self):
         print('Got through!')
