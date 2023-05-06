@@ -6,42 +6,43 @@ from ..utils.utility_funcs import *
 class LingeringEffect(pygame.sprite.Sprite):
     def __init__(self, groups, pos, enemies:pygame.sprite.Group, damage, effect_status:dict=None, radius=None, color=None) -> None:
         super().__init__(groups)
-        self.sprite_groups = groups
+        self.sprite_groups = groups #for spawnSecondary
         self.enemies = enemies
         self.pos = pos
         print(pos)
-        self.color = color if color else (255,50,50)
+        self.color = color if color else (50,255,50)
         self.init_time = pygame.time.get_ticks()
-        self.animation_time = 200 #ms
-        self.max_radius = radius if radius else 25
-        self.already_damaged = []
-        self.damage = damage
+        self.animation_time = 2000 #ms
+        self.radius = radius if radius else 50
+        self.damage = damage # DPS
         self.status = effect_status
-        self.image = pygame.Surface([self.max_radius*2, self.max_radius*2],pygame.SRCALPHA)
+        self.image = pygame.Surface([self.radius*2, self.radius*2],pygame.SRCALPHA)
+        pygame.draw.circle(self.image,self.color,(self.radius,self.radius),self.radius)
         self.rect = self.image.get_rect(center=self.pos)
+        self.printDmg = True
 
     def update(self,dt):
-        scaling_factor = (pygame.time.get_ticks() - self.init_time) / self.animation_time
-        if scaling_factor > 1:
+        # scaling_factor = (pygame.time.get_ticks() - self.init_time) / self.animation_time
+        if pygame.time.get_ticks() > self.init_time + self.animation_time:
             self.kill()
             return
-        self.image = pygame.Surface([self.max_radius*2, self.max_radius*2],pygame.SRCALPHA)
-        r = int(scaling_factor * self.max_radius)
 
-        self.dealDamageToEnemies(r)
+        self.dealDamageToEnemies(dt)
 
         # pygame.gfxdraw.circle(self.image,self.max_radius,self.max_radius,r,self.color)
-        pygame.draw.circle(self.image,self.color,(self.max_radius,self.max_radius),r,1)
         # pygame.gfxdraw.filled_circle(self.image,self.max_radius,self.max_radius,r,(123,20,20))
         # self.image.set_alpha(125)
 
-    def dealDamageToEnemies(self,current_r):
+    def dealDamageToEnemies(self,dt):
         for enemy in self.enemies.sprites():
-            if enemyInRange(self.pos,enemy.pos,current_r) and not enemy in self.already_damaged:
-                enemy.changeHealth(-self.damage)
+            if self.rect.colliderect(enemy.rect):
+                if self.printDmg:
+                    print(-self.damage * dt,dt)
+                    self.printDmg=False
+                enemy.changeHealth(-self.damage * dt) #
                 if self.status:
                     self.applyEffects(enemy)
-                self.already_damaged.append(enemy)
+
 
     def applyEffects(self,enemy):
         if "spawn_secondary" in self.status.keys():

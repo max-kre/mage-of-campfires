@@ -108,7 +108,8 @@ class Tower(pygame.sprite.Sprite):
         if self.has_splash:
             Explosion(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
         else:
-            DirectHit(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=None,color=self.color)
+            # DirectHit(self.animation_group,self.pos,enemy_to_shoot_at,damage=self.damage,effect_status=None,color=self.color)
+            LingeringEffect(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage)
         print("Pow!")
 
         self.can_shoot = False

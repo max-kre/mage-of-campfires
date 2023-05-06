@@ -41,6 +41,7 @@ class Enemy(pygame.sprite.Sprite):
 
         # flags n stuff
         self.got_hit = False
+        self.is_alive = True
 
     @staticmethod
     def getPathLength(path):
@@ -56,6 +57,8 @@ class Enemy(pygame.sprite.Sprite):
     #     pass
     
     def changeHealth(self,amount):
+        if not self.is_alive:
+            return
         self.health += amount
         self.got_hit = True if amount < 0 else False
         if self.sounds:
@@ -111,6 +114,7 @@ class Enemy(pygame.sprite.Sprite):
         self.kill()
 
     def enemyGotKilled(self):
+        self.is_alive = False
         print("BLARGH")
         if self.sounds:
             self.sounds["death_sound"].play()

@@ -44,9 +44,9 @@ TOWER_BASEVALUES = {
     "sniper": {
         "color": (25,250,250),
         "range" : 700,
-        "damage" : 30,
+        "damage" : 50,
         # "has_splash": False,
-        "attack_delay" : 1000,
-        "target_strategy": "strongest"
+        "attack_delay" : 500,
+        "target_strategy": "first"
     }
 }

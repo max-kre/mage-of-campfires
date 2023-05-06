@@ -6,7 +6,7 @@ from ..utils.utility_funcs import *
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, groups, pos, enemies:pygame.sprite.Group, damage, effect_status:dict=None, radius=None, color=None) -> None:
         super().__init__(groups)
-        self.sprite_groups = groups
+        self.sprite_groups = groups #for spawnSecondary
         self.enemies = enemies
         self.pos = pos
         print(pos)

@@ -1,47 +1,44 @@
 import pygame
+import math
 # import pygame.gfxdraw
 from ..utils.utility_funcs import *
 
-
 class DirectHit(pygame.sprite.Sprite):
-    def __init__(self, groups, pos, enemies:pygame.sprite.Group, damage, effect_status:dict=None, radius=None, color=None) -> None:
+    def __init__(self, groups, startpos:pygame.math.Vector2, enemy, damage, effect_status:dict=None, color=None) -> None:
         super().__init__(groups)
-        self.sprite_groups = groups
-        self.enemies = enemies
-        self.pos = pos
-        print(pos)
+        self.sprite_groups = groups #for spawnSecondary
+        self.startpos = startpos.copy()
+        self.pos = startpos.copy() #pygame.math.Vector2(startpos.x,startpos.y)
+        self.target_enemy = enemy
         self.color = color if color else (255,50,50)
-        self.init_time = pygame.time.get_ticks()
-        self.animation_time = 200 #ms
-        self.max_radius = radius if radius else 25
-        self.already_damaged = []
+        self.speed = 1300
         self.damage = damage
         self.status = effect_status
-        self.image = pygame.Surface([self.max_radius*2, self.max_radius*2],pygame.SRCALPHA)
+        self.image = pygame.Surface([10, 10],pygame.SRCALPHA)
+        pygame.draw.circle(self.image,(50,50,50),(5,5),5,5)
         self.rect = self.image.get_rect(center=self.pos)
 
     def update(self,dt):
-        scaling_factor = (pygame.time.get_ticks() - self.init_time) / self.animation_time
-        if scaling_factor > 1:
+        self.move(dt)
+        if self.rect.colliderect(self.target_enemy.rect):
+        # if calcLengthBetweenPos(self.startpos,self.pos) > calcLengthBetweenPos(self.startpos, self.target_enemy.pos):
+            # if bullet behind enemy from POV of tower
+            self.dealDamageToEnemy()
             self.kill()
-            return
-        self.image = pygame.Surface([self.max_radius*2, self.max_radius*2],pygame.SRCALPHA)
-        r = int(scaling_factor * self.max_radius)
+            # return
 
-        self.dealDamageToEnemies(r)
+    def move(self, dt):
+        direction = pygame.math.Vector2(
+            self.target_enemy.pos - self.pos
+        ).normalize()
+        self.pos += direction * self.speed * dt
+        self.rect.center = self.pos
+        pass
 
-        # pygame.gfxdraw.circle(self.image,self.max_radius,self.max_radius,r,self.color)
-        pygame.draw.circle(self.image,self.color,(self.max_radius,self.max_radius),r,1)
-        # pygame.gfxdraw.filled_circle(self.image,self.max_radius,self.max_radius,r,(123,20,20))
-        # self.image.set_alpha(125)
-
-    def dealDamageToEnemies(self,current_r):
-        for enemy in self.enemies.sprites():
-            if enemyInRange(self.pos,enemy.pos,current_r) and not enemy in self.already_damaged:
-                enemy.changeHealth(-self.damage)
-                if self.status:
-                    self.applyEffects(enemy)
-                self.already_damaged.append(enemy)
+    def dealDamageToEnemy(self):
+        self.target_enemy.changeHealth(-self.damage)
+        if self.status:
+            self.applyEffects(self.target_enemy)
 
     def applyEffects(self,enemy):
         if "spawn_secondary" in self.status.keys():
