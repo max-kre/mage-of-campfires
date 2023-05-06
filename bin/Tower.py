@@ -7,8 +7,8 @@ from .projectiles import *
 from .utils.utility_funcs import *
 
 IMAGES = {
-    "blast": pygame.image.load('data/graphics/towers/cannon_lvl1.png'),
-    "sniper": pygame.image.load('data/graphics/towers/cannon_lvl1.png')
+    "blast": pygame.image.load('data/graphics/towers/mango1.png'),
+    "sniper": pygame.image.load('data/graphics/towers/cannon1.png')
 }
 FOUNDATION_IMG = pygame.image.load('data/graphics/towers/foundation.png')
 class Tower(pygame.sprite.Sprite):
