@@ -68,19 +68,20 @@ class Game:
 
     def changeLife(self,amount):
         self.lives += amount
-        print("Lives",self.lives)
+        # print("Lives",self.lives)
 
     def changeGold(self,amount):
         self.gold += amount
-        print("Gold",self.gold)
+        # print("Gold",self.gold)
 
     def update(self,dt):
         if pygame.time.get_ticks() > self.starttime + 500:
             self.isReady=True
         if self.isReady:
+            print("DT:", dt)
             self.spawnEnemyWave()
             self.wave_counter += 1
-            print("RAWR", self.wave_counter)
+            # print("RAWR", self.wave_counter)
             self.isReady=False
             self.starttime = pygame.time.get_ticks()
         pass

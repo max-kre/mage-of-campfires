@@ -22,7 +22,7 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = pos if pos is not None else pygame.math.Vector2(self.path[0])
         
         self.basestats = ENEMIES_BASEVALUES[type]
-        print (self.type)
+        # print (self.type)
         # self.image = pygame.image.load(f'data/graphics/enemies/{self.type}.png')
         self.image = IMAGES[self.type].copy()
         self.rect = self.image.get_rect(midbottom=self.pos)
@@ -66,23 +66,23 @@ class Enemy(pygame.sprite.Sprite):
             return
         self.health += amount
         self.got_hit = True if amount < 0 else False
-        if self.sounds:
-            self.sounds["hit_sound"].play()
+        # if self.sounds:
+        #     self.sounds["hit_sound"].play()
         if self.health <= 0:
             self.enemyGotKilled()
         elif self.got_hit:
             self.got_hit_time = pygame.time.get_ticks()
 
-    # def blink(self):
-    #     blink_rate = 60
-    #     now_tick = pygame.time.get_ticks()
-    #     alpha = 255*(1+sin(now_tick/blink_rate))
-    #     self.image.set_alpha(alpha)
+    def blink(self):
+        blink_rate = 30
+        now_tick = pygame.time.get_ticks()
+        alpha = 255*(1+math.sin(now_tick/blink_rate))
+        self.image.set_alpha(alpha)
 
     def update(self,dt):
         #_perc = self.health/self.basestats["health"]
         if self.got_hit:
-           self.image.set_alpha(50)
+           self.blink()
            if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
                self.got_hit = False
                self.image.set_alpha(255)
@@ -134,13 +134,13 @@ class Enemy(pygame.sprite.Sprite):
 
 
     def enemyGotThrough(self):
-        print('Got through!')
+        # print('Got through!')
         self.changePlayerHealthFunc(-self.penalty)
         self.kill()
 
     def enemyGotKilled(self):
         self.is_alive = False
-        print("BLARGH")
+        # print("BLARGH")
         if self.sounds:
             self.sounds["death_sound"].play()
         self.changePlayerGoldFunc(self.worth)

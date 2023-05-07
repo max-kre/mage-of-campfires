@@ -4,7 +4,7 @@ SCREENSIZE = (1200,800)
 
 
 #damage to enemies
-CD_GOTHIT = 30 # time in ms for enemy to blink after getting hit
+CD_GOTHIT = 100 # time in ms for enemy to blink after getting hit
 COL_GOTHIT = (150,150,150)
 
 #gameplay
@@ -44,7 +44,15 @@ TOWER_BASEVALUES = {
             "spawn_explosion":{
                 "damage": 20,
                 "radius": 250,
-                "effect": None
+                "effect": #None
+                    {
+                    "create_puddle": {
+                        "damage": 50,
+                        "radius": 25,
+                        "duration":500,
+                        "effect": None
+                    }
+                }
             }
         }
     },
@@ -63,12 +71,17 @@ TOWER_BASEVALUES = {
         "damage" : 0,
         # "has_splash": False,
         "attack_delay" : 1000,
-        "target_strategy": "strongest",
+        "target_strategy": "first",
         "effects":{
             "create_puddle": {
                 "damage": 50,
                 "radius": 50,
                 "effect": {
+                    # "spawn_explosion":{
+                    #     "damage": 2,
+                    #     "radius": 150,
+                    #     "effect": None
+                    # },
                     "slow":{
                         "duration_sec": 0.5,
                         "slow_percent": 50

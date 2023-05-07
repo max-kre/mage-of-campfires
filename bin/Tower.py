@@ -59,24 +59,6 @@ class Tower(pygame.sprite.Sprite):
         self.splash_radius = 0 #if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False
         self.effects = TOWER_BASEVALUES[self.type]["effects"]
-        # {
-        #     "spawn_explosion":{
-        #         "damage": self.damage//2,
-        #         "radius": self.splash_radius//2,
-        #         "effect": {
-        #             "spawn_explosion":{
-        #                 "damage": self.damage//3,
-        #                 "radius": self.splash_radius//3,
-        #                 "effect": None
-        #             }
-        #         }
-        #     },
-        #     "create_puddle": {
-        #         "damage": 50,
-        #         "radius": 50,
-        #         "effect": None
-        #     }
-        # }
 
         self.target_strategy = TOWER_BASEVALUES[self.type]["target_strategy"]
 
@@ -113,11 +95,13 @@ class Tower(pygame.sprite.Sprite):
 
     def spawnDamageEffect(self, enemy_to_shoot_at):
         if self.has_splash:
-            Explosion(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
+            GeneralProjectile("Explosion",groups=self.animation_group,pos=enemy_to_shoot_at.pos,enemies=self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
+            # Explosion(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
         else:
-            DirectHit(self.animation_group,self.pos,self.enemy_group,enemy_to_shoot_at,damage=self.damage,effect_status=self.effects,color=self.color)
+            GeneralProjectile("DirectHit",groups=self.animation_group,pos = self.pos,enemies=self.enemy_group,enemy=enemy_to_shoot_at,damage=self.damage,effect_status=self.effects,color=self.color)
+            # DirectHit(self.animation_group,self.pos,self.enemy_group,enemy_to_shoot_at,damage=self.damage,effect_status=self.effects,color=self.color)
             # LingeringEffect(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage)
-        print("Pow!")
+        # print("Pow!")
 
         self.can_shoot = False
         self.time_of_last_shot = pygame.time.get_ticks()
