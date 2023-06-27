@@ -1,11 +1,11 @@
 import pygame
-import os
+import os, sys
 from pygame import mixer
 from bin.settings import SCREENSIZE
 from bin.main import Game
+from bin.menu import MainMenu
 # from bin.Enemy import Enemy
 # from bin.Tower import Tower
-
 
 # handle main UI with menu etc
 # handle overall flow
@@ -18,17 +18,34 @@ class MoC_Main():
         pygame.display.set_caption('Mage of Campfires - Lit!')
         
 
-        self.run_game = False
+        self.main_menu = MainMenu()
         self.game = Game()
 
-        pygame.mouse.set_visible(False)
+        pygame.mouse.set_visible(True)
         
         pass
     #init vars
 
     def run(self):
-    #start game in menu screen
-        self.game.run()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    print("I wanna quit")
+                    pygame.quit()
+                    sys.exit()
+            
+            #start menu screen
+            if self.main_menu.update() == True:
+                self.main_menu.run()
+                
+            elif self.main_menu.update() == False:
+                print("start game")
+                self.game.run()
+
+            else:
+                pass
+            
+
     #...
     #...
 
@@ -41,5 +58,5 @@ class MoC_Main():
 
 
 if __name__ == "__main__":
-    game = MoC_Main()
-    game.run()
+    menu = MoC_Main()
+    menu.run()

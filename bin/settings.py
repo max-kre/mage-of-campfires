@@ -1,14 +1,14 @@
 #Settings for game
 
 SCREENSIZE = (1200,800)
-
+GAMEVERSION = 0.001
 
 #damage to enemies
 CD_GOTHIT = 100 # time in ms for enemy to blink after getting hit
 COL_GOTHIT = (150,150,150)
 
 #gameplay
-STARTGOLD = 200
+STARTGOLD = 0
 STARTLIVES = 10
 
 #enemies

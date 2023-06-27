@@ -90,11 +90,11 @@ class Game:
         self.animation_sprites.update(dt)
 
     def drawUI(self):
-        gold_img = self.ui_font_40px.render(f"Gold: {self.gold}", False, "black")
+        gold_img = self.ui_font_40px.render(f"Gold: {self.gold}", True, "black")
         gold_rect = gold_img.get_rect(topright=(SCREENSIZE[0]-25,8))
-        lives_img = self.ui_font_40px.render(f"Lives: {self.lives}", False, "red")
+        lives_img = self.ui_font_40px.render(f"Lives: {self.lives}", True, "red")
         lives_rect = lives_img.get_rect(topleft=(25,8))
-        wave_img = self.ui_font_40px.render(f"Sent: {self.wave_counter}", False, "black")
+        wave_img = self.ui_font_40px.render(f"Sent: {self.wave_counter}", True, "black")
         wave_rect = wave_img.get_rect(midtop=(SCREENSIZE[0]//2,15))
         self.display_surface.blit(gold_img, gold_rect)
         self.display_surface.blit(lives_img, lives_rect)
