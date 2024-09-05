@@ -1,7 +1,7 @@
 import pygame
 import math
 from .settings import *
-# from .utility_funcs import *
+from .utils.utility_funcs import *
 
 IMAGES = {
     "boss": pygame.image.load(f'data/graphics/enemies/boss.png'),
@@ -22,9 +22,9 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = pos if pos is not None else pygame.math.Vector2(self.path[0])
         
         self.basestats = ENEMIES_BASEVALUES[type]
-        print (self.type)
+        # print (self.type)
         # self.image = pygame.image.load(f'data/graphics/enemies/{self.type}.png')
-        self.image = IMAGES[self.type]
+        self.image = IMAGES[self.type].copy()
         self.rect = self.image.get_rect(midbottom=self.pos)
 
         #movement
@@ -41,6 +41,12 @@ class Enemy(pygame.sprite.Sprite):
 
         # flags n stuff
         self.got_hit = False
+        self.is_alive = True
+
+        #timers
+        self.effect_timers = {
+            "slow": effect_timer()
+        }
 
     @staticmethod
     def getPathLength(path):
@@ -56,30 +62,34 @@ class Enemy(pygame.sprite.Sprite):
     #     pass
     
     def changeHealth(self,amount):
+        if not self.is_alive:
+            return
         self.health += amount
         self.got_hit = True if amount < 0 else False
-        if self.sounds:
-            self.sounds["hit_sound"].play()
+        # if self.sounds:
+        #     self.sounds["hit_sound"].play()
         if self.health <= 0:
             self.enemyGotKilled()
         elif self.got_hit:
             self.got_hit_time = pygame.time.get_ticks()
 
-    # def blink(self):
-    #     blink_rate = 60
-    #     now_tick = pygame.time.get_ticks()
-    #     alpha = 255*(1+sin(now_tick/blink_rate))
-    #     self.image.set_alpha(alpha)
+    def blink(self):
+        blink_rate = 30
+        now_tick = pygame.time.get_ticks()
+        alpha = 255*(1+math.sin(now_tick/blink_rate))
+        self.image.set_alpha(alpha)
 
     def update(self,dt):
         #_perc = self.health/self.basestats["health"]
-        #if self.got_hit:
-        #    self.image.fill(COL_GOTHIT)
-        #    if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
-        #        self.got_hit = False
+        if self.got_hit:
+           self.blink()
+           if (self.got_hit_time + CD_GOTHIT) < pygame.time.get_ticks():
+               self.got_hit = False
+               self.image.set_alpha(255)
         #else:
         #    self.image.fill((255*_perc,255*(1-_perc),0))
         self.move(dt)
+        self.checkTimers()
         
         # print(self.pos.x, self.pos.y)
 
@@ -105,13 +115,32 @@ class Enemy(pygame.sprite.Sprite):
         #move rect to current pos
         self.rect.midbottom = self.pos
 
+    def checkTimers(self):
+        gameticks_now = pygame.time.get_ticks()
+        for effect,timer in zip(self.effect_timers.keys(),self.effect_timers.values()):
+            if timer.is_active:
+                timer.update(gameticks_now)
+                if timer.has_just_finished:
+                    self.handleEffects(effect,start=False)
+                    timer.reset()
+
+    def handleEffects(self,effect_type:str,start=True,info_dict:dict=None):
+        if effect_type == "slow":
+            if start:
+                self.effect_timers["slow"].start_timer(pygame.time.get_ticks(),info_dict["duration_sec"])
+                self.speed = self.basestats["speed"] * info_dict["slow_percent"]/100
+            else:
+                self.speed = self.basestats["speed"]
+
+
     def enemyGotThrough(self):
-        print('Got through!')
+        # print('Got through!')
         self.changePlayerHealthFunc(-self.penalty)
         self.kill()
 
     def enemyGotKilled(self):
-        print("BLARGH")
+        self.is_alive = False
+        # print("BLARGH")
         if self.sounds:
             self.sounds["death_sound"].play()
         self.changePlayerGoldFunc(self.worth)

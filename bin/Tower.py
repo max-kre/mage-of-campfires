@@ -3,12 +3,13 @@ import pygame.gfxdraw
 import math
 from .settings import *
 from .Enemy import Enemy
-from .ringShot import RingShotSprite
+from .projectiles import *
 from .utils.utility_funcs import *
 
 IMAGES = {
-    "blast": pygame.image.load('data/graphics/towers/cannon_lvl1.png'),
-    "sniper": pygame.image.load('data/graphics/towers/cannon_lvl1.png')
+    "blast": pygame.image.load('data/graphics/towers/mango1.png'),
+    "sniper": pygame.image.load('data/graphics/towers/cannon1.png'),
+    "puddler": pygame.image.load('data/graphics/towers/cannon1.png')
 }
 FOUNDATION_IMG = pygame.image.load('data/graphics/towers/foundation.png')
 class Tower(pygame.sprite.Sprite):
@@ -55,21 +56,9 @@ class Tower(pygame.sprite.Sprite):
         #draw range
         # pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
         self.damage = TOWER_BASEVALUES[self.type]["damage"]
-        self.splash_radius = 0 if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
+        self.splash_radius = 0 #if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False
-        self.effects = {
-            "spawn_secondary":{
-                "damage": self.damage//2,
-                "radius": self.splash_radius//2,
-                "effect": {
-                    "spawn_secondary":{
-                        "damage": self.damage//3,
-                        "radius": self.splash_radius//3,
-                        "effect": None
-                    }
-                }
-            }
-        }
+        self.effects = TOWER_BASEVALUES[self.type]["effects"]
 
         self.target_strategy = TOWER_BASEVALUES[self.type]["target_strategy"]
 
@@ -106,10 +95,13 @@ class Tower(pygame.sprite.Sprite):
 
     def spawnDamageEffect(self, enemy_to_shoot_at):
         if self.has_splash:
-            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
+            GeneralProjectile("Explosion",groups=self.animation_group,pos=enemy_to_shoot_at.pos,enemies=self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
+            # Explosion(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=self.effects,radius=self.splash_radius,color=self.color)
         else:
-            RingShotSprite(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage,effect_status=None,color=self.color)
-        print("Pow!")
+            GeneralProjectile("DirectHit",groups=self.animation_group,pos = self.pos,enemies=self.enemy_group,enemy=enemy_to_shoot_at,damage=self.damage,effect_status=self.effects,color=self.color)
+            # DirectHit(self.animation_group,self.pos,self.enemy_group,enemy_to_shoot_at,damage=self.damage,effect_status=self.effects,color=self.color)
+            # LingeringEffect(self.animation_group,enemy_to_shoot_at.pos,self.enemy_group,damage=self.damage)
+        # print("Pow!")
 
         self.can_shoot = False
         self.time_of_last_shot = pygame.time.get_ticks()

@@ -1,27 +1,29 @@
 import pygame
-# import pygame.gfxdraw
-from .utils.utility_funcs import *
+# from .DirectHit import DirectHit
+from .Lingering import LingeringEffect
+from ..utils.utility_funcs import *
 
 
-class RingShotSprite(pygame.sprite.Sprite):
-    def __init__(self, groups, pos, enemies:pygame.sprite.Group, damage, effect_status:dict=None, radius=None, color=None) -> None:
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, groups, pos, enemies:pygame.sprite.Group, damage=None, effect_status:dict=None, radius=None, duration_ms=None, color=None, parent=None) -> None:
         super().__init__(groups)
-        self.sprite_groups = groups
+        self.parent=parent
+        self.sprite_groups = groups #for spawnSecondary
         self.enemies = enemies
         self.pos = pos
-        print(pos)
+        # print(pos)
         self.color = color if color else (255,50,50)
         self.init_time = pygame.time.get_ticks()
-        self.animation_time = 200 #ms
+        self.duration = duration_ms if duration_ms else 200 #ms
         self.max_radius = radius if radius else 25
         self.already_damaged = []
-        self.damage = damage
-        self.status = effect_status
+        self.damage = damage if damage else 0
+        self.status = effect_status if effect_status else {}
         self.image = pygame.Surface([self.max_radius*2, self.max_radius*2],pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=self.pos)
 
     def update(self,dt):
-        scaling_factor = (pygame.time.get_ticks() - self.init_time) / self.animation_time
+        scaling_factor = (pygame.time.get_ticks() - self.init_time) / self.duration
         if scaling_factor > 1:
             self.kill()
             return
@@ -31,7 +33,7 @@ class RingShotSprite(pygame.sprite.Sprite):
         self.dealDamageToEnemies(r)
 
         # pygame.gfxdraw.circle(self.image,self.max_radius,self.max_radius,r,self.color)
-        pygame.draw.circle(self.image,self.color,(self.max_radius,self.max_radius),r,1)
+        pygame.draw.circle(self.image,self.color,(self.max_radius,self.max_radius),r,10)
         # pygame.gfxdraw.filled_circle(self.image,self.max_radius,self.max_radius,r,(123,20,20))
         # self.image.set_alpha(125)
 
@@ -44,9 +46,7 @@ class RingShotSprite(pygame.sprite.Sprite):
                 self.already_damaged.append(enemy)
 
     def applyEffects(self,enemy):
-        if "spawn_secondary" in self.status.keys():
-            self.spawnSecondary(self.sprite_groups,enemy.pos,self.enemies,self.status["spawn_secondary"]["damage"],self.status["spawn_secondary"]["effect"],self.status["spawn_secondary"]["radius"],"blue")#self.color)
+        self.parent.handle_effects(self, enemy)
+
     
-    def spawnSecondary(self,groups,pos:pygame.math.Vector2,enemies,effect_damage,effect_status,radius,color):
-        RingShotSprite(groups,pos,enemies,effect_damage,effect_status,radius,color)
-        # pass
+

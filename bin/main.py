@@ -63,23 +63,25 @@ class Game:
         
     def spawnDummyTower(self):
         Tower(self.tower_sprites,pygame.math.Vector2((430,387)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="blast")
-        # Tower(self.tower_sprites,pygame.math.Vector2((500,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="sniper")
+        Tower(self.tower_sprites,pygame.math.Vector2((500,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="sniper")
+        Tower(self.tower_sprites,pygame.math.Vector2((700,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="puddler")
 
     def changeLife(self,amount):
         self.lives += amount
-        print("Lives",self.lives)
+        # print("Lives",self.lives)
 
     def changeGold(self,amount):
         self.gold += amount
-        print("Gold",self.gold)
+        # print("Gold",self.gold)
 
     def update(self,dt):
         if pygame.time.get_ticks() > self.starttime + 500:
             self.isReady=True
         if self.isReady:
+            print("DT:", dt)
             self.spawnEnemyWave()
             self.wave_counter += 1
-            print("RAWR", self.wave_counter)
+            # print("RAWR", self.wave_counter)
             self.isReady=False
             self.starttime = pygame.time.get_ticks()
         pass
@@ -88,11 +90,11 @@ class Game:
         self.animation_sprites.update(dt)
 
     def drawUI(self):
-        gold_img = self.ui_font_40px.render(f"Gold: {self.gold}", False, "black")
+        gold_img = self.ui_font_40px.render(f"Gold: {self.gold}", True, "black")
         gold_rect = gold_img.get_rect(topright=(SCREENSIZE[0]-25,8))
-        lives_img = self.ui_font_40px.render(f"Lives: {self.lives}", False, "red")
+        lives_img = self.ui_font_40px.render(f"Lives: {self.lives}", True, "red")
         lives_rect = lives_img.get_rect(topleft=(25,8))
-        wave_img = self.ui_font_40px.render(f"Sent: {self.wave_counter}", False, "black")
+        wave_img = self.ui_font_40px.render(f"Sent: {self.wave_counter}", True, "black")
         wave_rect = wave_img.get_rect(midtop=(SCREENSIZE[0]//2,15))
         self.display_surface.blit(gold_img, gold_rect)
         self.display_surface.blit(lives_img, lives_rect)
@@ -103,9 +105,9 @@ class Game:
         # draw bg
         self.display_surface.blit(self.bg_img,(0,0))
         pygame.draw.aalines(self.display_surface,"white",False,ENEMYPATH,1)
-        self.enemy_sprites.draw(self.display_surface)
-        self.tower_sprites.draw(self.display_surface)
         self.animation_sprites.draw(self.display_surface)
+        self.tower_sprites.draw(self.display_surface)
+        self.enemy_sprites.draw(self.display_surface)
         self.drawUI()
 
 if __name__ == "__main__":
