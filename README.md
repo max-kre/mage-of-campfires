@@ -7,8 +7,8 @@
 - Enemy class should allow to easily implement new kinds of enemies
 - implement Boss class
 - implement minion class
-- implement blast (cannon) class
-- implement sniper class
+- [x] implement blast (cannon) class
+- [x] implement sniper class
 - ...
 - class to handle tower building
   - should instantiate tower kind chosen by user
