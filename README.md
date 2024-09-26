@@ -3,7 +3,7 @@
 
 
 ## ToDos
-- Tower class should allow to easily implement new kinds of towers
+- [x] Tower class should allow to easily implement new kinds of towers
 - Enemy class should allow to easily implement new kinds of enemies
 - implement Boss class
 - implement minion class

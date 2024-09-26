@@ -6,40 +6,57 @@ from .Enemy import Enemy
 from .projectiles import *
 from .utils.utility_funcs import *
 
-IMAGES = {
-    "blast": pygame.image.load('data/graphics/towers/mango1.png'),
-    "sniper": pygame.image.load('data/graphics/towers/cannon1.png'),
-    "puddler": pygame.image.load('data/graphics/towers/cannon1.png')
-}
-FOUNDATION_IMG = pygame.image.load('data/graphics/towers/foundation.png')
+__all__ = [
+    "BlastTower",
+    "SniperTower",
+    "PuddlerTower"
+]
+
+# IMAGES = {
+#     "blast": pygame.image.load('data/graphics/towers/mango1.png'),
+#     "sniper": pygame.image.load('data/graphics/towers/cannon1.png'),
+#     "puddler": pygame.image.load('data/graphics/towers/cannon1.png')
+# }
+
 class Tower(pygame.sprite.Sprite):
+    foundation = pygame.image.load('data/graphics/towers/foundation.png')
     def __init__(self, 
         group, 
         pos:pygame.math.Vector2, 
         enemy_group:pygame.sprite.Group, 
         animation_group:pygame.sprite.Group,
-        type:str, 
     ) -> None:
         super().__init__(group)
 
-        self.type = type
+        # self.type = type
         self.pos = pos
-        self.color = TOWER_BASEVALUES[self.type]["color"]
+        #self.color = TOWER_BASEVALUES[self.type]["color"]
         
-        self.range = TOWER_BASEVALUES[self.type]["range"]
+        #self.range = TOWER_BASEVALUES[self.type]["range"]
         self.height, self.width = self.range*2, self.range*2
         
-        self.foundation = FOUNDATION_IMG
         # self.pos_f = (pos[0]-10, pos[1]-10)
         # self.rect_f = self.foundation.get_rect(center=self.pos_f)
 
-        self.base_image = pygame.Surface([self.width, self.height],pygame.SRCALPHA)
+        self.base_image = pygame.Surface([self.width, self.height], pygame.SRCALPHA)
         # self.image_canon = pygame.image.load('data/graphics/towers/cannon_lvl1.png').convert_alpha()
-        self.base_image.blit(self.foundation, (self.range-self.foundation.get_width()//2, self.range-self.foundation.get_height()//2))
-        pygame.draw.circle(self.base_image,self.color,(self.range, self.range),self.range,width=1)
+        self.base_image.blit(
+            self.foundation,
+            (
+                self.range - self.foundation.get_width() // 2,
+                self.range - self.foundation.get_height() // 2,
+            ),
+        )
+        pygame.draw.circle(
+            self.base_image, self.color, (self.range, self.range), self.range, width=1
+        )
         # self.image.fill("white")
         # self.image.set_colorkey("white")
-        self.image=self.base_image.copy()
+        self.image = self.base_image.copy()
+        self.image.blit(
+            self.towerImage,
+            (self.range - self.towerImage.get_width()//2, self.range - self.towerImage.get_height()//2)
+        )
         self.rect = self.image.get_rect(center=self.pos)
         #pygame.draw.circle(self.image,self.color,(self.range,self.range),25)
         # pygame.gfxdraw.filled_circle(self.image,32,32,12,(0,255,255))
@@ -51,16 +68,15 @@ class Tower(pygame.sprite.Sprite):
         self.enemies_in_range = []
         self.can_shoot = True
         self.time_of_last_shot = pygame.time.get_ticks()
-        self.attack_delay = TOWER_BASEVALUES[self.type]["attack_delay"] #ms
         # self.range = 200
         #draw range
         # pygame.gfxdraw.aacircle(self.image,self.range-1,self.range-1,self.range,(50,50,50))
-        self.damage = TOWER_BASEVALUES[self.type]["damage"]
+        #self.damage = TOWER_BASEVALUES[self.type]["damage"]
         self.splash_radius = 0 #if not "splash_radius" in TOWER_BASEVALUES[self.type].keys() else TOWER_BASEVALUES[self.type]["splash_radius"]
         self.has_splash = True if self.splash_radius > 0 else False
-        self.effects = TOWER_BASEVALUES[self.type]["effects"]
+        #self.effects = TOWER_BASEVALUES[self.type]["effects"]
 
-        self.target_strategy = TOWER_BASEVALUES[self.type]["target_strategy"]
+        # self.target_strategy = TOWER_BASEVALUES[self.type]["target_strategy"]
 
     def findEnemiesInRange(self):
         #get enemies in range, descending from furthest enemy
@@ -75,7 +91,7 @@ class Tower(pygame.sprite.Sprite):
 
     def shootAtEnemy(self):
         if not self.can_shoot:
-            if self.time_of_last_shot + self.attack_delay < pygame.time.get_ticks():
+            if self.time_of_last_shot + self.attackDelay < pygame.time.get_ticks():
                 self.can_shoot = True
             else:
                 return
@@ -85,9 +101,9 @@ class Tower(pygame.sprite.Sprite):
         if len(self.enemies_in_range) == 0:
             #nothing to shoot
             return
-        if self.target_strategy == "first":
+        if self.targetStrategy == "first":
             enemy_to_shoot_at = sorted(self.enemies_in_range,key=lambda x:x.percent_of_path_traveled,reverse=True)[0]
-        elif self.target_strategy == "strongest":
+        elif self.targetStrategy == "strongest":
             enemy_to_shoot_at = sorted(self.enemies_in_range,key=lambda x:x.health,reverse=True)[0]
         # self.dealDamage(enemy_to_shoot_at)
         self.spawnDamageEffect(enemy_to_shoot_at)
@@ -119,7 +135,8 @@ class Tower(pygame.sprite.Sprite):
         delta_x = enemy_pos.x - self.pos.x
         delta_y = enemy_pos.y - self.pos.y
         angle_to_enemy = -90+math.degrees(math.atan2(-delta_y,delta_x))
-        rot_image = pygame.transform.rotate(IMAGES[self.type],angle_to_enemy)
+        # rot_image = pygame.transform.rotate(IMAGES[self.type],angle_to_enemy)
+        rot_image = pygame.transform.rotate(self.towerImage,angle_to_enemy)
         self.image = self.base_image.copy()
         self.image.blit(
             rot_image,
@@ -137,5 +154,40 @@ class Tower(pygame.sprite.Sprite):
         
         # print(self.pos.x, self.pos.y)
 
+class BlastTower(Tower):
+    towerImage = pygame.image.load('data/graphics/towers/mango1.png')
+    type = "blast"
+    def __init__(self, towerSprites, pos, enemyGroup, animationGroup):
+        self.color = (250,25,25)
+        self.range = 300
+        self.damage = 0
+        self.attackDelay = 1200
+        self.targetStrategy = "first" 
+        self.effects = None
+        super().__init__(towerSprites, pos, enemyGroup, animationGroup)
 
+class SniperTower(Tower):
+    towerImage = pygame.image.load('data/graphics/towers/cannon1.png')
+    type = "sniper"
+    def __init__(self, towerSprites, pos, enemyGroup, animationGroup):
+        self.color = (50,50,50)
+        self.range = 700
+        self.damage = 50
+        self.attackDelay = 1000
+        self.targetStrategy = "strongest" 
+        self.effects = None
+        super().__init__(towerSprites, pos, enemyGroup, animationGroup)
+
+
+class PuddlerTower(Tower):
+    towerImage = pygame.image.load('data/graphics/towers/cannon1.png')
+    type = "puddler"
+    def __init__(self, towerSprites, pos, enemyGroup, animationGroup):
+        self.color = (25,250,50)
+        self.range = 700
+        self.damage = 0
+        self.attackDelay = 1000
+        self.targetStrategy = "first"
+        self.effects = None
+        super().__init__(towerSprites, pos, enemyGroup, animationGroup)
 

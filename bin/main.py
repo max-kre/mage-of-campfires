@@ -3,7 +3,7 @@ from sys import exit
 from pygame import mixer
 from .settings import *
 from .Enemy import Enemy
-from .Tower import Tower
+from .Tower import * #BlastTower, SniperTower, PuddlerTower
 
 class Game:
     def __init__(self) -> None:
@@ -62,19 +62,19 @@ class Game:
         # self.enemies.append(Enemy(pos=pygame.math.Vector2((0,100)), group=self.enemy_sprites))
         
     def spawnDummyTower(self):
-        Tower(self.tower_sprites,pygame.math.Vector2((430,387)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="blast")
-        Tower(self.tower_sprites,pygame.math.Vector2((500,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="sniper")
-        Tower(self.tower_sprites,pygame.math.Vector2((700,450)),enemy_group=self.enemy_sprites, animation_group=self.animation_sprites, type="puddler")
+        BlastTower(self.tower_sprites, pygame.math.Vector2((430,387)), self.enemy_sprites, self.animation_sprites)
+        SniperTower(self.tower_sprites,pygame.math.Vector2((500,450)),self.enemy_sprites, self.animation_sprites)
+        PuddlerTower(self.tower_sprites,pygame.math.Vector2((700,450)),self.enemy_sprites, self.animation_sprites)
 
-    def changeLife(self,amount):
+    def changeLife(self, amount):
         self.lives += amount
         # print("Lives",self.lives)
 
-    def changeGold(self,amount):
+    def changeGold(self, amount):
         self.gold += amount
         # print("Gold",self.gold)
 
-    def update(self,dt):
+    def update(self, dt):
         if pygame.time.get_ticks() > self.starttime + 500:
             self.isReady=True
         if self.isReady:
