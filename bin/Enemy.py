@@ -1,7 +1,7 @@
 import pygame
 import math
-from .settings import *
-from .utils.utility_funcs import *
+from bin.settings import *
+from bin.utils.utility_funcs import *
 
 IMAGES = {
     "boss": pygame.image.load(f'data/graphics/enemies/boss.png'),

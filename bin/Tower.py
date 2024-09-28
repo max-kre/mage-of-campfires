@@ -1,10 +1,10 @@
 import pygame
 import pygame.gfxdraw
 import math
-from .settings import *
-from .Enemy import Enemy
-from .projectiles import *
-from .utils.utility_funcs import *
+from bin.settings import *
+from bin.Enemy import Enemy
+from bin.projectiles import *
+from bin.utils.utility_funcs import *
 
 __all__ = [
     "BlastTower",

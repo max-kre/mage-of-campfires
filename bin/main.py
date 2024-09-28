@@ -1,9 +1,9 @@
 import pygame
 from sys import exit
 from pygame import mixer
-from .settings import *
-from .Enemy import Enemy
-from .Tower import * #BlastTower, SniperTower, PuddlerTower
+from bin.settings import *
+from bin.Enemy import Enemy
+from bin.Tower import * #BlastTower, SniperTower, PuddlerTower
 
 class Game:
     def __init__(self) -> None:
@@ -84,7 +84,7 @@ class Game:
             # print("RAWR", self.wave_counter)
             self.isReady=False
             self.starttime = pygame.time.get_ticks()
-        pass
+
         self.enemy_sprites.update(dt)
         self.tower_sprites.update(dt)
         self.animation_sprites.update(dt)
@@ -99,7 +99,7 @@ class Game:
         self.display_surface.blit(gold_img, gold_rect)
         self.display_surface.blit(lives_img, lives_rect)
         self.display_surface.blit(wave_img, wave_rect)
-        pass
+
 
     def draw(self):
         # draw bg

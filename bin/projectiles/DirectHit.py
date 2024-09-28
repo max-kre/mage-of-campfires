@@ -1,10 +1,10 @@
 import pygame
 import math
 # from . import *
-from .Lingering import LingeringEffect
-from .Explosion import Explosion
+from bin.projectiles.Explosion import LingeringEffect
+from bin.projectiles.Explosion import Explosion
 # import pygame.gfxdraw
-from ..utils.utility_funcs import *
+from bin.utils.utility_funcs import *
 
 class DirectHit(pygame.sprite.Sprite):
     def __init__(self, groups, pos:pygame.math.Vector2, enemies:pygame.sprite.Group, enemy, damage, effect_status:dict=None, color=None, parent=None) -> None:

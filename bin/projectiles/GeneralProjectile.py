@@ -1,6 +1,6 @@
-from .Explosion import Explosion
-from .Lingering import LingeringEffect
-from .DirectHit import DirectHit
+from bin.projectiles.Explosion import Explosion
+from bin.projectiles.Lingering import LingeringEffect
+from bin.projectiles.DirectHit import DirectHit
 import pygame
 
 class GeneralProjectile:

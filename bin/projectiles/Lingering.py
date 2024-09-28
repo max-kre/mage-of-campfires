@@ -1,7 +1,7 @@
 import pygame
 # from .Explosion import Explosion
 # from .DirectHit import DirectHit
-from ..utils.utility_funcs import *
+from bin.utils.utility_funcs import *
 
 
 class LingeringEffect(pygame.sprite.Sprite):
