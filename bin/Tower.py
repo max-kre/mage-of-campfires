@@ -22,13 +22,15 @@ class Tower(pygame.sprite.Sprite):
     foundation = pygame.image.load('data/graphics/towers/foundation.png')
     def __init__(self, 
         group, 
-        pos:pygame.math.Vector2, 
+        pos:pygame.math.Vector2 | tuple[int|float, int|float], 
         enemy_group:pygame.sprite.Group, 
         animation_group:pygame.sprite.Group,
     ) -> None:
         super().__init__(group)
 
         # self.type = type
+        if isinstance(pos, tuple):
+            pos = pygame.math.Vector2(pos)
         self.pos = pos
         #self.color = TOWER_BASEVALUES[self.type]["color"]
         
